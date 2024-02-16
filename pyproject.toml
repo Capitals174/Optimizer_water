@@ -1,0 +1,55 @@
+[build-system]
+requires = [
+    "setuptools >= 40.6.0",
+    "wheel"
+]
+build-backend = "setuptools.build_meta"
+
+[tool.isort]
+profile = "black"
+known_first_party = "turbo_generator_model"
+known_evraz = "evraz"
+sections=["FUTURE", "STDLIB", "THIRDPARTY", "EVRAZ", "FIRSTPARTY", "LOCALFOLDER"]
+line_length = 80
+
+[tool.yapf]
+based_on_style = "pep8"
+spaces_before_comment = 4
+column_limit = 80
+allow_split_before_dict_value = false
+dedent_closing_brackets = true
+split_complex_comprehension = true
+split_arguments_when_comma_terminated = true
+blank_line_before_nested_class_or_def = true
+
+split_before_dict_set_generator = true
+split_before_first_argument = true
+split_before_arithmetic_operator = true
+split_before_logical_operator = true
+split_before_bitwise_operator = true
+# comparisons (==, <, >, !=, <>, <=, >=, in, not in, is, is not) - сейчас
+# не переносятся ждем 40 версию yapf отключаем в тех местах где идет некорректный перенеос
+# https://github.com/google/yapf/blob/main/CHANGELOG
+
+[tool.flake8]
+max-line-length = 80
+select = ['F', 'E', 'W', ]
+
+# Мы используем правило W504, где наилучшей практикой является:
+# income = (gross_wages
+#           + taxable_interest)
+# Поэтому правило W503 должно быть проигнорированно, где наилучшая практика:
+# income = (gross_wages +
+#           taxable_interest)
+ignore = ['W503', ]
+
+# Игнорируем такие спецефичиские особенности SQLAlchemy, как:
+# "field == None" или "field == True"
+per-file-ignores = [
+    '*/adapters/*/repositories.py:E711,E712',
+    '*/adapters/*/repositories/*:E711,E712',
+    '*/migrations/*:E711,E712',
+    '*/alembic/versions/*:E711,E712',
+    '__init__.py:F401',
+]
+count = true
