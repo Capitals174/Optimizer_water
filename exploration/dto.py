@@ -38,6 +38,14 @@ class ReagentsDosesAndSurfaceWaterParams(BaseModel):
     # Аммиак водный технический
     technical_ammonia: float
     # Флокулянт (контактная камера)
-    flocculant_chamber:float
+    flocculant_chamber: float
     # Флокулянт (фильтры)
     flocculant_filters: float
+    #Стоимость реагентов
+    aluminum_sulfate_price: float
+    aluminum_oxychloride_price: float
+    potassium_permanganate_price: float
+    chlorine_price: float
+    technical_ammonia_price: float
+    flocculant_chamber_price: float
+    flocculant_filters_price: float
