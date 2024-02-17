@@ -49,3 +49,14 @@ class ReagentsDosesAndSurfaceWaterParams(BaseModel):
     technical_ammonia_price: float
     flocculant_chamber_price: float
     flocculant_filters_price: float
+
+
+class OptimizationResult(BaseModel):
+    aluminum_sulfate: float
+    aluminum_oxychloride: float
+    potassium_permanganate: float
+    chlorine: float
+    technical_ammonia: float
+    flocculant_chamber: float
+    flocculant_filters: float
+    
