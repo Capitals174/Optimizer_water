@@ -4,7 +4,7 @@ from typing import Any, Generator
 import numpy as np
 import pandas as pd
 
-from .constants import (
+from constants import (
     OPTIMIZED_PARAMETERS,
     STATIC_PARAMETERS,
     TECHNICAL_LIMITS,

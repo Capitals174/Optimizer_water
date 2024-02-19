@@ -102,9 +102,16 @@ class Model:
             ) + technical_ammonia * technical_ammonia_price + (
                 flocculant_chamber * flocculant_chamber_price
             ) + flocculant_filters * flocculant_filters_price
-        ) * 10 ** (-3) * queue_water_flow
+        ) * 10 ** (-9) * queue_water_flow
 
         return dict(
+            aluminum_sulfate=aluminum_sulfate,
+            aluminum_oxychloride=aluminum_oxychloride,
+            potassium_permanganate=potassium_permanganate,
+            chlorine=chlorine,
+            technical_ammonia=technical_ammonia,
+            flocculant_chamber=flocculant_chamber,
+            flocculant_filters=flocculant_filters,
             pot_chromaticity=pot_chromaticity,
             pot_hydrogen=pot_hydrogen,
             pot_manganese=pot_manganese,
@@ -154,6 +161,13 @@ class Model:
         ) * 10 ** (-3) * queue_water_flow
 
         return dict(
+            aluminum_sulfate=aluminum_sulfate,
+            aluminum_oxychloride=aluminum_oxychloride,
+            potassium_permanganate=potassium_permanganate,
+            chlorine=chlorine,
+            technical_ammonia=technical_ammonia,
+            flocculant_chamber=flocculant_chamber,
+            flocculant_filters=flocculant_filters,
             pot_chromaticity=pot_chromaticity,
             pot_hydrogen=pot_hydrogen,
             pot_manganese=pot_manganese,

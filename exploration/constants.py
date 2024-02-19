@@ -9,15 +9,24 @@ OPTIMIZED_PARAMETERS = [
 ]
 
 STATIC_PARAMETERS = [
-   'chromaticity',
-   'turbidity',
-   'hydrogen',
-   'alkalinity',
-   'manganese',
-   'iron',
-   'ammonia_ammonium',
-   'temperature_c',
-   'iron_2'
+
+    'queue_water_flow',
+    'chromaticity',
+    'turbidity',
+    'hydrogen',
+    'alkalinity',
+    'manganese',
+    'iron',
+    'ammonia_ammonium',
+    'temperature_c',
+    'iron_2',
+    'aluminum_sulfate_price',
+    'aluminum_oxychloride_price',
+    'potassium_permanganate_price',
+    'chlorine_price',
+    'technical_ammonia_price',
+    'flocculant_chamber_price',
+    'flocculant_filters_price'
 ]
 
 TECHNICAL_LIMITS = {
@@ -32,21 +41,21 @@ TECHNICAL_LIMITS = {
 
 TARGETS_FOR_POTABLE_WATER = [
     'pot_chromaticity',
-    'pot_turbidity',
+    # 'pot_turbidity',
     'pot_hydrogen',
     'pot_manganese',
     'pot_iron',
     'pot_alkalinity',
     'pot_ammonia_ammonium',
     'pot_aluminum',
-    'pot_residual_chlorine'
+    # 'pot_residual_chlorine'
 ]
 
 # Убрать из constants, сделать dto из Стандарта питьевой воды
 POT_WATER_LIMITS = {
     'pot_chromaticity_min': 0,
     'pot_chromaticity_max': 18,
-    'pot_hydrogen_min': 6.5,
+    'pot_hydrogen_min': 6,
     'pot_hydrogen_max': 8,
     'pot_manganese_min': 0,
     'pot_manganese_max': 0.08,
@@ -60,5 +69,5 @@ POT_WATER_LIMITS = {
     'pot_aluminum_max': 0.16,
 }
 
-STEPS_FOR_VARIANTS_GENERATOR = 10
-STEPS_FOR_ALUMINIUM_SULFATE = 100
+STEPS_FOR_VARIANTS_GENERATOR = 2
+STEPS_FOR_ALUMINIUM_SULFATE = 2

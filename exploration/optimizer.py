@@ -4,11 +4,11 @@ from pydantic import BaseModel
 
 from evraz.classic.components import component
 
-from .dto import ReagentsDosesAndSurfaceWaterParams
-from .feature_engineering import FeatureEngineering
-from .loss_function import LossFunction
-from .model import Model
-from .variants_generator import VariantsGenerator
+from dto import ReagentsDosesAndSurfaceWaterParams
+from feature_engineering import FeatureEngineering
+from loss_function import LossFunction
+from model import Model
+from variants_generator import VariantsGenerator
 
 
 @component
