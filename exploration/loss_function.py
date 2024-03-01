@@ -11,35 +11,9 @@ class LossFunction:
 
     def __init__(
             self,
-            pot_chromaticity_min: float,
-            pot_chromaticity_max: float,
-            pot_hydrogen_min: float,
-            pot_hydrogen_max: float,
-            pot_manganese_min: float,
-            pot_manganese_max: float,
-            pot_iron_min: float,
-            pot_iron_max: float,
-            pot_alkalinity_min: float,
-            pot_alkalinity_max: float,
-            pot_ammonia_ammonium_min: float,
-            pot_ammonia_ammonium_max: float,
-            pot_aluminum_min: float,
-            pot_aluminum_max: float,
+            limits: dict,
     ):
-        self.pot_chromaticity_min = pot_chromaticity_min
-        self.pot_chromaticity_max = pot_chromaticity_max
-        self.pot_hydrogen_min = pot_hydrogen_min
-        self.pot_hydrogen_max = pot_hydrogen_max
-        self.pot_manganese_min = pot_manganese_min
-        self.pot_manganese_max = pot_manganese_max
-        self.pot_iron_min = pot_iron_min
-        self.pot_iron_max = pot_iron_max
-        self.pot_alkalinity_min = pot_alkalinity_min
-        self.pot_alkalinity_max = pot_alkalinity_max
-        self.pot_ammonia_ammonium_min = pot_ammonia_ammonium_min
-        self.pot_ammonia_ammonium_max = pot_ammonia_ammonium_max
-        self.pot_aluminum_min = pot_aluminum_min
-        self.pot_aluminum_max = pot_aluminum_max
+        self.limits = limits
 
     def __call__(self, model_results: Iterable[Any]) -> BaseModel:
         result = self._calculate_optimise_parameters(model_results)
@@ -59,14 +33,29 @@ class LossFunction:
         ]
         df = pd.DataFrame(columns=columns_df)
         for model_result in model_results:
-            new_row = pd.DataFrame([model_result])
-            df = pd.concat([df, new_row], ignore_index=True)
+            new_row_dict = self._filter_model_results(model_result)
+            if new_row_dict is not None:
+                new_row = pd.DataFrame([new_row_dict])
+                df = pd.concat([df, new_row], ignore_index=True)
 
-        df = self._filtered_by_limits(df)
         df.sort_values(by='cost_reagents', ascending=False, inplace=True)
         prediction_df = df.iloc[[0]]
         result = prediction_df.iloc[0].to_dict()
         return result
+
+    def _filter_model_results(self, results: dict):
+        list_of_limits = []
+        for key in self.limits.keys():
+            if (results[key] >= self.limits[key][0]) and (
+                    results[key] < self.limits[key][1]
+            ):
+                list_of_limits.append(True)
+            else:
+                list_of_limits.append(False)
+        if False in list_of_limits:
+            return None
+        else:
+            return results
 
     def _filtered_by_limits(self, df: pd.DataFrame):
         df = df[

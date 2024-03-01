@@ -53,21 +53,14 @@ TARGETS_FOR_POTABLE_WATER = [
 
 # Убрать из constants, сделать dto из Стандарта питьевой воды
 POT_WATER_LIMITS = {
-    'pot_chromaticity_min': 0,
-    'pot_chromaticity_max': 18,
-    'pot_hydrogen_min': 6,
-    'pot_hydrogen_max': 8,
-    'pot_manganese_min': 0,
-    'pot_manganese_max': 0.08,
-    'pot_iron_min': 0,
-    'pot_iron_max': 0.03,
-    'pot_alkalinity_min': 0.3,
-    'pot_alkalinity_max': 1.5,
-    'pot_ammonia_ammonium_min': 0.12,
-    'pot_ammonia_ammonium_max': 1.8,
-    'pot_aluminum_min': 0,
-    'pot_aluminum_max': 0.16,
+    'pot_chromaticity': [0, 18],
+    'pot_hydrogen': [6, 8],
+    'pot_manganese': [0, 0.08],
+    'pot_iron': [0, 0.03],
+    'pot_alkalinity': [0.3, 1.5],
+    'pot_ammonia_ammonium': [0.12, 1.8],
+    'pot_aluminum': [0, 0.16],
 }
 
-STEPS_FOR_VARIANTS_GENERATOR = 2
-STEPS_FOR_ALUMINIUM_SULFATE = 2
+STEPS_FOR_VARIANTS_GENERATOR = 5
+STEPS_FOR_ALUMINIUM_SULFATE = 10
