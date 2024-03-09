@@ -10,6 +10,7 @@ from constants import (
     TECHNICAL_LIMITS,
     STEPS_FOR_VARIANTS_GENERATOR,
     STEPS_FOR_ALUMINIUM_SULFATE,
+    STEPS_FOR_FLOCCULANT
 )
 
 
@@ -31,6 +32,16 @@ class VariantsGenerator:
         for parameter in restrictions:
             if parameter == 'aluminum_sulfate':
                 step_for_key_parameter = STEPS_FOR_ALUMINIUM_SULFATE
+                variations_of_params = list(
+                    np.linspace(
+                        restrictions[parameter][lower_bound],
+                        restrictions[parameter][upper_bound],
+                        step_for_key_parameter
+                    )
+                )
+                all_variations_of_opmised_params.append(variations_of_params)
+            elif parameter == 'flocculant_chamber' or parameter == 'flocculant_filters':
+                step_for_key_parameter = STEPS_FOR_FLOCCULANT
                 variations_of_params = list(
                     np.linspace(
                         restrictions[parameter][lower_bound],
