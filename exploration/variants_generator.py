@@ -22,11 +22,8 @@ class VariantsGenerator:
         df = self._create_dataframe_for_prediction(
             step=STEPS_FOR_VARIANTS_GENERATOR, **features
         )
-        for index, row in df.iterrows():
-            row_dict = {}
-            for column in df.columns:
-                row_dict[column] = row[column]
-            yield row_dict
+        return df
+
 
     def _generate_combinations(self, restrictions, step):
         lower_bound, upper_bound = 0, 1
@@ -80,3 +77,23 @@ class VariantsGenerator:
         return default_restrictions
 
 # yapf: enable
+'''
+comb = pd.Dataframe(columns=[])
+var = {
+    'model_1': ['feature_1', 'feature_2'],
+    'model_1': ['feature_1', 'feature_2'],
+:2}
+result = pd.Dataframe() #comb
+
+for model in models:
+    tmp_data = comb[car[model]] # result.index
+    predict = model.predict(tmp_data)
+    predict_filt = predict.loc[><..]
+    result = result.join(predict_filt, how='left')
+    result = result.dropna()
+
+result['cost'] = res # читаем стоимость
+
+pt = result.min()
+
+'''

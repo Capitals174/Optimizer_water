@@ -30,10 +30,10 @@ STATIC_PARAMETERS = [
 ]
 
 TECHNICAL_LIMITS = {
-   'aluminum_sulfate': [0, 15],
-   'aluminum_oxychloride': [0, 17],
+   'aluminum_sulfate': [4.5, 15],
+   'aluminum_oxychloride': [0, 0],
    'potassium_permanganate': [0, 5],
-   'chlorine': [0, 7],
+   'chlorine': [2.6, 7],
    'technical_ammonia': [0, 1.5],
    'flocculant_chamber': [0, 0.5],
    'flocculant_filters': [0, 0.5],
@@ -62,5 +62,5 @@ POT_WATER_LIMITS = {
     'pot_aluminum': [0, 0.16],
 }
 
-STEPS_FOR_VARIANTS_GENERATOR = 5
-STEPS_FOR_ALUMINIUM_SULFATE = 10
+STEPS_FOR_VARIANTS_GENERATOR = 10
+STEPS_FOR_ALUMINIUM_SULFATE = 20

@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 from evraz.classic.components import component
 
+import constants
 from dto import ReagentsDosesAndSurfaceWaterParams
 from feature_engineering import FeatureEngineering
 from loss_function import LossFunction
@@ -23,8 +24,9 @@ class Optimizer:
         params: ReagentsDosesAndSurfaceWaterParams,
     ) -> Generator[Any, None, None]:
         features = self.generate_features(params)
-        for variant in self.generate_variants(features):
-            yield self.predict(variant)
+        df = self.generate_variants(features)
+        limits = constants.POT_WATER_LIMITS
+        return self.predict(limits, df)
 
     def __call__(self, params: ReagentsDosesAndSurfaceWaterParams) -> BaseModel:
         model_results = self._get_model_results(params)
