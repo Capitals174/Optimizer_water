@@ -57,10 +57,10 @@ class Model:
         self.pot_ammonia_model_ammonium_queue_2 = self._get_model(
             path_to_pot_ammonia_ammonium_model_queue_2
         )
-        self.pot_pot_aluminum_model_queue_1 = self._get_model(
+        self.pot_aluminum_model_queue_1 = self._get_model(
             path_to_pot_aluminum_model_queue_1
         )
-        self.pot_pot_aluminum_model_queue_2 = self._get_model(
+        self.pot_aluminum_model_queue_2 = self._get_model(
             path_to_pot_aluminum_model_queue_2
         )
         self.limits = limits
@@ -113,7 +113,7 @@ class Model:
             )
         ]
 
-        df['pot_aluminum'] = self.pot_pot_aluminum_model_queue_1.predict(
+        df['pot_aluminum'] = self.pot_aluminum_model_queue_1.predict(
             df[features]
         )
         df = df[
@@ -172,14 +172,14 @@ class Model:
             ]
         df[
             'pot_ammonia_ammonium'
-        ] = self.pot_ammonia_ammonium_model_queue_2.predict(df[features])
+        ] = self.pot_ammonia_model_ammonium_queue_2.predict(df[features])
         df = df[(
             df['pot_ammonia_ammonium'] >= self.limits['pot_ammonia_ammonium'][0]
         ) & (
             df['pot_ammonia_ammonium'] < self.limits['pot_ammonia_ammonium'][1]
         )]
 
-        df['pot_aluminum'] = self.pot_pot_aluminum_model_queue_2.predict(
+        df['pot_aluminum'] = self.pot_aluminum_model_queue_2.predict(
             df[features]
         )
         df = df[
@@ -211,6 +211,6 @@ class Queue1Model(Model):
 
 class Queue2Model(Model):
 
-    def __call__(self, variant: Any) -> Any:
-        return self.get_prediction_queue_2(**variant)
+    def __call__(self, limits: dict, variant: Any) -> Any:
+        return self.get_prediction_queue_2(variant)
 
