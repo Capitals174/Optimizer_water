@@ -1,6 +1,8 @@
 from typing import Any
 from catboost import  CatBoostRegressor
 
+from constants import MODEL_LIST
+
 
 class Model:
     def __init__(
@@ -81,27 +83,29 @@ class Model:
         df['pot_chromaticity'] = self.pot_chromaticity_model_queue_1.predict(
             df[features]
         )
-        df = df[df['pot_chromaticity'] < self.limits['pot_chromaticity'][1]]
+        df = df[df['pot_chromaticity'] <= self.limits['pot_chromaticity'][1]]
         df['pot_hydrogen'] = self.pot_hydrogen_model_queue_1.predict(
             df[features]
         )
         df = df[
             (df['pot_hydrogen'] >= self.limits['pot_hydrogen'][0]) & (
-                    df['pot_hydrogen'] < self.limits['pot_hydrogen'][1]
+                    df['pot_hydrogen'] <= self.limits['pot_hydrogen'][1]
             )
         ]
 
         df['pot_manganese'] = self.pot_manganese_model_queue_1.predict(
             df[features]
         )
-        df = df[df['pot_manganese'] < self.limits['pot_manganese'][1]]
+        df = df[df['pot_manganese'] <= self.limits['pot_manganese'][1]]
         df['pot_iron'] = self.pot_iron_model_queue_1.predict(df[features])
+        df = df[df['pot_iron'] <= self.limits['pot_iron'][1]]
+
         df['pot_alkalinity'] = self.pot_alkalinity_model_queue_1.predict(
             df[features]
         )
         df = df[
             (df['pot_alkalinity'] >= self.limits['pot_alkalinity'][0]) & (
-                    df['pot_alkalinity'] < self.limits['pot_alkalinity'][1]
+                    df['pot_alkalinity'] <= self.limits['pot_alkalinity'][1]
             )
         ]
         df['pot_ammonia_ammonium'] = self.pot_ammonia_ammonium_model_queue_1.predict(
@@ -109,7 +113,7 @@ class Model:
         )
         df = df[
             (df['pot_ammonia_ammonium'] >= self.limits['pot_ammonia_ammonium'][0]) & (
-                    df['pot_ammonia_ammonium'] < self.limits['pot_ammonia_ammonium'][1]
+                    df['pot_ammonia_ammonium'] <= self.limits['pot_ammonia_ammonium'][1]
             )
         ]
 
@@ -118,7 +122,7 @@ class Model:
         )
         df = df[
             (df['pot_aluminum'] >= self.limits['pot_aluminum'][0]) & (
-                    df['pot_aluminum'] < self.limits['pot_aluminum'][1]
+                    df['pot_aluminum'] <= self.limits['pot_aluminum'][1]
             )
         ]
         df['cost_reagents'] = (
@@ -131,6 +135,7 @@ class Model:
             ) + df['flocculant_filters'] * df['flocculant_filters_price']
         ) * 10 ** (-9) * df['queue_water_flow']
 
+        df = df[MODEL_LIST]
         return df
 
     def get_prediction_queue_2(
@@ -147,27 +152,28 @@ class Model:
         df['pot_chromaticity'] = self.pot_chromaticity_model_queue_2.predict(
             df[features]
         )
-        df = df[df['pot_chromaticity'] < self.limits['pot_chromaticity'][1]]
+        df = df[df['pot_chromaticity'] <= self.limits['pot_chromaticity'][1]]
         df['pot_hydrogen'] = self.pot_hydrogen_model_queue_2.predict(
             df[features]
         )
         df = df[
             (df['pot_hydrogen'] >= self.limits['pot_hydrogen'][0]) & (
-                    df['pot_hydrogen'] < self.limits['pot_hydrogen'][1]
+                    df['pot_hydrogen'] <= self.limits['pot_hydrogen'][1]
             )
             ]
 
         df['pot_manganese'] = self.pot_manganese_model_queue_2.predict(
             df[features]
         )
-        df = df[df['pot_manganese'] < self.limits['pot_manganese'][1]]
+        df = df[df['pot_manganese'] <= self.limits['pot_manganese'][1]]
         df['pot_iron'] = self.pot_iron_model_queue_2.predict(df[features])
+        df = df[df['pot_iron'] <= self.limits['pot_iron'][1]]
         df['pot_alkalinity'] = self.pot_alkalinity_model_queue_2.predict(
             df[features]
         )
         df = df[
             (df['pot_alkalinity'] >= self.limits['pot_alkalinity'][0]) & (
-                    df['pot_alkalinity'] < self.limits['pot_alkalinity'][1]
+                    df['pot_alkalinity'] <= self.limits['pot_alkalinity'][1]
             )
             ]
         df[
@@ -176,7 +182,7 @@ class Model:
         df = df[(
             df['pot_ammonia_ammonium'] >= self.limits['pot_ammonia_ammonium'][0]
         ) & (
-            df['pot_ammonia_ammonium'] < self.limits['pot_ammonia_ammonium'][1]
+            df['pot_ammonia_ammonium'] <= self.limits['pot_ammonia_ammonium'][1]
         )]
 
         df['pot_aluminum'] = self.pot_aluminum_model_queue_2.predict(
@@ -184,7 +190,7 @@ class Model:
         )
         df = df[
             (df['pot_aluminum'] >= self.limits['pot_aluminum'][0]) & (
-                    df['pot_aluminum'] < self.limits['pot_aluminum'][1]
+                    df['pot_aluminum'] <= self.limits['pot_aluminum'][1]
             )
             ]
 
@@ -200,6 +206,7 @@ class Model:
             ) + df['flocculant_filters'] * df['flocculant_filters_price']
         ) * 10 ** (-9) * df['queue_water_flow']
 
+        df = df[MODEL_LIST]
         return df
 
 

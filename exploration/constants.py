@@ -55,13 +55,19 @@ TARGETS_FOR_POTABLE_WATER = [
 POT_WATER_LIMITS = {
     'pot_chromaticity': [0, 18],
     'pot_hydrogen': [6, 8],
-    'pot_manganese': [0, 0.09],
-    'pot_iron': [0, 0.03],
+    'pot_manganese': [0, 0.1],
+    'pot_iron': [0, 0.3],
     'pot_alkalinity': [0.3, 1.5],
     'pot_ammonia_ammonium': [0.12, 1.8],
     'pot_aluminum': [0, 0.16],
 }
 
 STEPS_FOR_VARIANTS_GENERATOR = 10
-STEPS_FOR_ALUMINIUM_SULFATE = 20
+STEPS_FOR_ALUMINIUM_SULFATE = 30
 STEPS_FOR_FLOCCULANT = 6
+
+MODEL_LIST =[
+    'aluminum_sulfate', 'aluminum_oxychloride','potassium_permanganate',
+    'chlorine', 'technical_ammonia', 'flocculant_chamber', 'flocculant_chamber',
+    'cost_reagents'
+]
