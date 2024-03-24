@@ -68,6 +68,6 @@ STEPS_FOR_FLOCCULANT = 6
 
 MODEL_LIST =[
     'aluminum_sulfate', 'aluminum_oxychloride','potassium_permanganate',
-    'chlorine', 'technical_ammonia', 'flocculant_chamber', 'flocculant_chamber',
+    'chlorine', 'technical_ammonia', 'flocculant_chamber', 'flocculant_filters',
     'cost_reagents'
 ]
