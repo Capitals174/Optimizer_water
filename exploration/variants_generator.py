@@ -72,7 +72,17 @@ class VariantsGenerator:
         for key, value in kwargs.items():
             if key in STATIC_PARAMETERS:
                 df_combinations[key] = value
+
+        df_combinations = self._add_calculated_features(df_combinations)
         return df_combinations
+
+    def _add_calculated_features(self, df):
+        df['manganese_permanganate'] = np.where(
+            df['potassium_permanganate'] != 0,
+            df['manganese'] / df['potassium_permanganate'],
+            0
+        )
+        return df
 
     def _create_default_restrictions(self):
         dynamic_columns = OPTIMIZED_PARAMETERS
