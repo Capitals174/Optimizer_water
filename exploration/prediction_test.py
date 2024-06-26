@@ -8,7 +8,7 @@ import pickle
 
 #predictor = Model(limits=constants.TECHNICAL_LIMITS, **model_paths)
 
-def get_model_pkl( path_to_model):
+def get_model_pkl(path_to_model):
     with open(path_to_model, 'rb') as file:
         model = pickle.load(file)
     return model
@@ -50,7 +50,7 @@ predictor_model = get_model(
 #         ]
 
 sample = np.array(
-    [62, 9, 7.1, 0, 10, 5, 0.1, 0.1]
+    [62, 9, 7.1, 0, 3, 2, 0.1, 0.1]
 )
 
 # Преобразование 1D массива в 2D массив

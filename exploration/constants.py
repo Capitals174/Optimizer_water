@@ -42,12 +42,23 @@ TECHNICAL_LIMITS = {
    'lime': [0, 10],
 }
 
+LIMITS_FOR_OPTIMIZER = {
+   'aluminum_sulfate': (4.5, 10.5),
+   #'aluminum_oxychloride': [0, 0],
+   'potassium_permanganate': (0, 3.4),
+   'chlorine': (1.9, 6.7),
+   'technical_ammonia': (0, 1.1),
+   'flocculant_chamber': (0, 0.4),
+   'flocculant_filters': (0, 0.3),
+   'lime': (0, 10),
+}
+
 TARGETS_FOR_POTABLE_WATER = [
     'pot_chromaticity',
     # 'pot_turbidity',
     'pot_hydrogen',
     'pot_manganese',
-    #'pot_iron',
+    'pot_iron',
     'pot_alkalinity',
     'pot_ammonia_ammonium',
     'pot_aluminum',

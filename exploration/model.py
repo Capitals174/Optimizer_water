@@ -1,8 +1,10 @@
 from typing import Any
 import pickle
+
+import pandas as pd
 from catboost import CatBoostRegressor
 
-from constants import MODEL_LIST
+from constants import MODEL_LIST, TARGETS_FOR_POTABLE_WATER
 
 
 class Model:
@@ -72,7 +74,6 @@ class Model:
         with open(path_to_model, 'rb') as file:
             model = pickle.load(file)
         return model
-        #return CatBoostRegressor().load_model(path_to_model)
 
     def _get_model(self, path_to_model):
         return CatBoostRegressor().load_model(path_to_model)
@@ -266,6 +267,78 @@ class Model:
         df = df[MODEL_LIST]
         return df
 
+    def get_prediction_for_hyperopt(self, df):
+        features = ['chromaticity', 'turbidity', 'hydrogen',
+                    'alkalinity', 'manganese', 'iron', 'ammonia_ammonium',
+                    'temperature_c',
+                    'iron_2', 'aluminum_sulfate',
+                    'potassium_permanganate', 'chlorine', 'technical_ammonia',
+                    'flocculant_chamber', 'flocculant_filters']
+        features_new = [
+            'chromaticity', 'turbidity', 'hydrogen', 'iron',
+             'aluminum_sulfate', 'potassium_permanganate', 'chlorine',
+             'technical_ammonia', 'flocculant_chamber', 'flocculant_filters',
+             'lime'
+        ]
+        features_for_mn = ['chromaticity', 'turbidity', 'hydrogen',
+           'alkalinity', 'iron', 'temperature_c','aluminum_sulfate', 'chlorine',
+           'manganese_permanganate'
+        ]
+        features_for_cr = ['chromaticity', 'turbidity', 'hydrogen', 'iron', 'temperature_c',
+            'aluminum_sulfate', 'chlorine', 'flocculant_chamber', 'flocculant_filters'
+        ]
+        features_for_ph = [
+            'chromaticity', 'turbidity', 'hydrogen', 'iron', 'temperature_c',
+            'aluminum_sulfate', 'chlorine', 'flocculant_chamber',
+            'flocculant_filters', 'lime'
+        ]
+        features_for_fe = [
+            'turbidity', 'hydrogen', 'iron', 'temperature_c', 'chlorine'
+        ]
+        features_for_alkalinity = [
+            'chromaticity', 'turbidity', 'hydrogen', 'iron', 'temperature_c',
+            'aluminum_sulfate',
+        ]
+
+        features_for_amonium = [
+            'chromaticity', 'turbidity', 'hydrogen', 'iron', 'temperature_c',
+            'aluminum_sulfate', 'chlorine', 'technical_ammonia'
+        ]
+
+        features_for_aluminium = [
+            'chromaticity', 'turbidity', 'hydrogen', 'iron', 'temperature_c',
+            'aluminum_sulfate', 'chlorine', 'technical_ammonia'
+        ]
+
+        df['pot_chromaticity'] = self.pot_chromaticity_model_queue_2.predict(
+            df[features_for_cr]
+        )
+        df['pot_hydrogen'] = self.pot_hydrogen_model_queue_2.predict(
+            df[features_for_ph]
+        )
+
+        df['pot_manganese'] = self.pot_manganese_model_queue_2.predict(
+            df[features_for_mn]
+            )
+
+        df['pot_iron'] = self.pot_iron_model_queue_2.predict(
+            df[features_for_fe]
+        )
+
+        df['pot_alkalinity'] = self.pot_alkalinity_model_queue_2.predict(
+            df[features_for_alkalinity]
+        )
+        df[
+            'pot_ammonia_ammonium'
+        ] = self.pot_ammonia_model_ammonium_queue_2.predict(df[features_for_amonium])
+
+        df['pot_aluminum'] = self.pot_aluminum_model_queue_2.predict(
+            df[features_for_aluminium]
+        )
+
+        df = df[TARGETS_FOR_POTABLE_WATER]
+        return df
+
 
 class Queue1Model(Model):
 
@@ -277,4 +350,11 @@ class Queue2Model(Model):
 
     def __call__(self, limits: dict, variant: Any) -> Any:
         return self.get_prediction_queue_2(variant)
+
+
+class ModelForHyperopt(Model):
+    def __call__(self, df: pd.DataFrame) -> Any:
+        return self.get_prediction_for_hyperopt(df)
+
+
 
