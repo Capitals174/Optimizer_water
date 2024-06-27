@@ -69,10 +69,11 @@ REAGENT_PRICES ={
     'aluminum_sulfate': 17150,
     'aluminum_oxychloride': 28800,
     'potassium_permanganate': 295900,
-    'chlorine_price': 58968,
+    'chlorine': 58968,
     'technical_ammonia': 27633,
     'flocculant_chamber': 100000,
     'flocculant_filters': 100000,
+    'lime': 19880,
 }
 
 TARGETS_FOR_POTABLE_WATER = [

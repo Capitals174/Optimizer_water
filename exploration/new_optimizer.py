@@ -1,11 +1,14 @@
 import warnings
 
 import pandas as pd
-from hyperopt import fmin, hp, tpe
+from hyperopt import fmin, hp, tpe, STATUS_OK
 
 from typing import Any
 from evraz.classic.components import component
-from constants import TECHNICAL_LIMITS, LIMITS_FOR_OPTIMIZER, REAGENT_PRICES, STATIC_PARAMETERS_HYPEROPT
+from constants import (
+    TECHNICAL_LIMITS, LIMITS_FOR_OPTIMIZER, REAGENT_PRICES,
+    STATIC_PARAMETERS_HYPEROPT, POT_WATER_LIMITS
+)
 from dto import ReagentsDosesAndSurfaceWaterParams
 from feature_engineering import FeatureEngineering
 from loss_function import LossFunction
@@ -28,36 +31,44 @@ class Optimizer:
         Вычисляет общую стоимость очистки воды.
         """
         total_cost = sum(
-            doses[reagent] * costs[reagent] * water_flow for reagent in doses)
+            doses[reagent] * costs[reagent] * water_flow / 1000000 for reagent in doses)
         return total_cost
 
-    def predict_water_quality(self, doses, models, river_params):
+    def predict_water_quality(self, doses, river_params):
         """
         Предсказывает значения параметров воды на основе доз реагентов и параметров речной воды.
         """
         # Объединяем дозы реагентов и параметры речной воды в один DataFrame
         features = {**doses, **river_params}
         feature_df = pd.DataFrame([features])
-        predictions = {param: model.predict(feature_df)[0] for param, model in
-                       models.items()}
+        predictions = self.predict(feature_df)
         return predictions
+
+    def are_parameters_within_limits(self, predictions, thresholds):
+        """
+        Проверяет, находятся ли все параметры в заданных пределах.
+        """
+        for param, value in predictions.items():
+            low, high = thresholds[param]
+            if not (low <= value[0] <= high):
+                return False
+        return True
+
+
 
     def objective(self, params):
         """
         Функция цели для оптимизации.
         """
         doses = {k: v for k, v in params.items() if k in TECHNICAL_LIMITS.keys()}
-        river_params = {k: v for k, v in params.items() if
-                        k not in STATIC_PARAMETERS_HYPEROPT.keys() and k != 'queue_water_flow'}
-
-        water_flow = params['queue_water_flow']
         total_cost = self.calculate_cost(
-            doses, REAGENT_PRICES, water_flow
+            doses, REAGENT_PRICES, self.water_flow
         )
 
-        predictions = self.predict_water_quality(doses, models, river_water_params)
-        drinkable = are_parameters_within_limits(predictions,
-                                                 water_quality_thresholds)
+        predictions = self.predict_water_quality(doses, self.river_water_params)
+        drinkable = self.are_parameters_within_limits(
+            predictions, self.water_quality_thresholds
+        )
 
         if drinkable:
             return {'loss': total_cost, 'status': STATUS_OK}
@@ -65,7 +76,11 @@ class Optimizer:
             return {'loss': float('inf'), 'status': STATUS_OK}
 
         # Запуск оптимизации
-    def run_optimizer(self, params: dict):
+    def run_optimizer(self, features: dict):
+        # self.thresholds = features['thresholds']
+        self.river_water_params = {k: v for k, v in features.items() if k in STATIC_PARAMETERS_HYPEROPT}
+        self.water_flow = features['queue_water_flow']
+        self.water_quality_thresholds = POT_WATER_LIMITS
 
         best = fmin(
             fn=self.objective,
@@ -76,9 +91,10 @@ class Optimizer:
         )
 
         print("Лучшие параметры:", best)
+        return best
+
 
     def __call__(self, params: ReagentsDosesAndSurfaceWaterParams) -> Any:
         features = self.generate_features(params)
         return self.run_optimizer(features)
 
-   

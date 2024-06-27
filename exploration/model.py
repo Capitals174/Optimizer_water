@@ -285,8 +285,8 @@ class Model:
            'manganese_permanganate'
         ]
         features_for_cr = ['chromaticity', 'turbidity', 'hydrogen', 'iron', 'temperature_c',
-            'aluminum_sulfate', 'chlorine', 'flocculant_chamber', 'flocculant_filters'
-        ]
+            'aluminum_sulfate'
+                           ]
         features_for_ph = [
             'chromaticity', 'turbidity', 'hydrogen', 'iron', 'temperature_c',
             'aluminum_sulfate', 'chlorine', 'flocculant_chamber',
@@ -317,6 +317,7 @@ class Model:
             df[features_for_ph]
         )
 
+        df['manganese_permanganate'] = df['manganese'] / df['potassium_permanganate']
         df['pot_manganese'] = self.pot_manganese_model_queue_2.predict(
             df[features_for_mn]
             )
@@ -337,7 +338,7 @@ class Model:
         )
 
         df = df[TARGETS_FOR_POTABLE_WATER]
-        return df
+        return df.to_dict(orient='list')
 
 
 class Queue1Model(Model):
