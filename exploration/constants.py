@@ -31,6 +31,18 @@ STATIC_PARAMETERS = [
     'lime_price'
 ]
 
+STATIC_PARAMETERS_HYPEROPT = [
+    'chromaticity',
+    'turbidity',
+    'hydrogen',
+    'alkalinity',
+    'manganese',
+    'iron',
+    'ammonia_ammonium',
+    'temperature_c',
+    'iron_2',
+]
+
 TECHNICAL_LIMITS = {
    'aluminum_sulfate': [4.5, 10.5],
    #'aluminum_oxychloride': [0, 0],
@@ -51,6 +63,16 @@ LIMITS_FOR_OPTIMIZER = {
    'flocculant_chamber': (0, 0.4),
    'flocculant_filters': (0, 0.3),
    'lime': (0, 10),
+}
+
+REAGENT_PRICES ={
+    'aluminum_sulfate': 17150,
+    'aluminum_oxychloride': 28800,
+    'potassium_permanganate': 295900,
+    'chlorine_price': 58968,
+    'technical_ammonia': 27633,
+    'flocculant_chamber': 100000,
+    'flocculant_filters': 100000,
 }
 
 TARGETS_FOR_POTABLE_WATER = [
