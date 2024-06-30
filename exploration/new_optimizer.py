@@ -6,8 +6,9 @@ from hyperopt import fmin, hp, tpe, STATUS_OK
 from typing import Any
 from evraz.classic.components import component
 from constants import (
-    TECHNICAL_LIMITS, LIMITS_FOR_OPTIMIZER, REAGENT_PRICES,
-    STATIC_PARAMETERS_HYPEROPT, POT_WATER_LIMITS
+    TECHNICAL_LIMITS, LIMITS_FOR_OPTIMIZER, LIMITS_FOR_OPTIMIZER_WITHOUT_MN,
+    REAGENT_PRICES,
+    STATIC_PARAMETERS_HYPEROPT, POT_WATER_LIMITS, MAX_EVALS,
 )
 from dto import ReagentsDosesAndSurfaceWaterParams
 from feature_engineering import FeatureEngineering
@@ -19,12 +20,6 @@ from variants_generator import VariantsGenerator
 class Optimizer:
     generate_features: FeatureEngineering
     predict: ModelForHyperopt
-
-    # self.cost_reagents = cost_reagents
-    solution_space = {
-        reagent: hp.uniform(reagent, low, high)
-        for reagent, (low, high) in LIMITS_FOR_OPTIMIZER.items()
-    }
 
     def calculate_cost(self, doses, costs, water_flow):
         """
@@ -78,6 +73,17 @@ class Optimizer:
         # Запуск оптимизации
     def run_optimizer(self, features: dict):
         # self.thresholds = features['thresholds']
+        if features['manganese'] != 0:
+            self.solution_space = {
+                reagent: hp.uniform(reagent, low, high)
+                for reagent, (low, high) in LIMITS_FOR_OPTIMIZER.items()
+            }
+        else:
+            self.solution_space = {
+                reagent: hp.uniform(reagent, low, high)
+                for reagent, (low, high) in LIMITS_FOR_OPTIMIZER_WITHOUT_MN.items()
+            }
+
         self.river_water_params = {k: v for k, v in features.items() if k in STATIC_PARAMETERS_HYPEROPT}
         self.water_flow = features['queue_water_flow']
         self.water_quality_thresholds = POT_WATER_LIMITS
@@ -86,15 +92,36 @@ class Optimizer:
             fn=self.objective,
             space=self.solution_space,
             algo=tpe.suggest,
-            max_evals=100,  # количество итераций
+            max_evals=MAX_EVALS,  # количество итераций
             verbose=False
         )
 
-        print("Лучшие параметры:", best)
+        # print("Лучшие параметры:", best)
+        if features['manganese'] == 0:
+            best['potassium_permanganate'] = 0
         return best
 
 
     def __call__(self, params: ReagentsDosesAndSurfaceWaterParams) -> Any:
         features = self.generate_features(params)
         return self.run_optimizer(features)
+
+    def effect_calculation(self, df: pd.DataFrame):
+        data = df.to_dict()
+        # for key, value in data.items():
+        #     data[key] = value[0]
+        result = self.run_optimizer(features=data)
+        aluminum_sulfate = result['aluminum_sulfate']
+        chlorine = result['chlorine']
+        flocculant_chamber = result['flocculant_chamber']
+        flocculant_filters = result['flocculant_filters']
+        lime = result['lime']
+        potassium_permanganate = result['potassium_permanganate']
+        technical_ammonia = result['technical_ammonia']
+        print('Итерация завершена')
+        return aluminum_sulfate, chlorine, flocculant_chamber, \
+               flocculant_filters, lime, potassium_permanganate, technical_ammonia
+
+
+
 

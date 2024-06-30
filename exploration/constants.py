@@ -55,9 +55,20 @@ TECHNICAL_LIMITS = {
 }
 
 LIMITS_FOR_OPTIMIZER = {
-   'aluminum_sulfate': (4.5, 10.5),
+   'aluminum_sulfate': (4, 11),
    #'aluminum_oxychloride': [0, 0],
-   'potassium_permanganate': (0, 3.4),
+   'potassium_permanganate': (0, 4.7),
+   'chlorine': (1.9, 6.7),
+   'technical_ammonia': (0, 1.1),
+   'flocculant_chamber': (0, 0.4),
+   'flocculant_filters': (0, 0.3),
+   'lime': (0, 10),
+}
+
+LIMITS_FOR_OPTIMIZER_WITHOUT_MN = {
+   'aluminum_sulfate': (4, 11),
+   #'aluminum_oxychloride': [0, 0],
+   # 'potassium_permanganate': (0, 0),
    'chlorine': (1.9, 6.7),
    'technical_ammonia': (0, 1.1),
    'flocculant_chamber': (0, 0.4),
@@ -108,3 +119,5 @@ MODEL_LIST =[
     'chlorine', 'technical_ammonia', 'flocculant_chamber', 'flocculant_filters',
     'cost_reagents'
 ]
+
+MAX_EVALS = 200

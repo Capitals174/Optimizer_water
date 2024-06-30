@@ -4,17 +4,27 @@ import pandas as pd
 import numpy as np
 
 import constants
-from variants_generator import VariantsGenerator
-from optimizer_for_effect_calculation import Optimizer
-from model import Queue1Model, Queue2Model
+from feature_engineering import FeatureEngineering
+from new_optimizer import Optimizer
+from model import ModelForHyperopt
 from loss_function_for_effect_calculation import LossFunction
 
 query = "SELECT * FROM research_composite"
-queue_list = [2]
+queue_list = [1]
+prices = {
+    'aluminum_sulfate_price': 17150,
+    'aluminum_oxychloride_price': 28800,
+    'potassium_permanganate_price': 295900,
+    'chlorine_price': 58968,
+    'technical_ammonia_price': 27633,
+    'flocculant_chamber_price': 100000,
+    'flocculant_filters_price': 100000,
+    'lime_price': 18160
+}
 
 model_paths = {
-    'path_to_pot_chromaticity_model_queue_1': './models/pot_chromaticity_model_queue_1.cb',
-    'path_to_pot_chromaticity_model_queue_2': './models/pot_chromaticity_model_queue_2.pkl',
+    'path_to_pot_chromaticity_model_queue_1': './models/pot_alkalinity_queue_1.cb',
+    'path_to_pot_chromaticity_model_queue_2': './models/pot_chromaticity_model_queue_2.cb',
     'path_to_pot_hydrogen_model_queue_1': './models/pot_hydrogen_model_queue_1.cb',
     'path_to_pot_hydrogen_model_queue_2': './models/pot_hydrogen_model_queue_2.pkl',
     'path_to_pot_manganese_model_queue_1': './models/pot_manganese_model_queue_1.cb',
@@ -27,17 +37,6 @@ model_paths = {
     'path_to_pot_ammonia_ammonium_model_queue_2': './models/pot_ammonia_ammonium_queue_2.pkl',
     'path_to_pot_aluminum_model_queue_1': './models/pot_aluminum_queue_1.cb',
     'path_to_pot_aluminum_model_queue_2': './models/pot_aluminum_queue_2.pkl',
-}
-
-my_dict = {
-    'aluminum_sulfate_price': 17150,
-    'aluminum_oxychloride_price': 28800,
-    'potassium_permanganate_price': 295900,
-    'chlorine_price': 58968,
-    'technical_ammonia_price': 27633,
-    'flocculant_chamber_price': 100000,
-    'flocculant_filters_price': 100000,
-    'lime_price': 18160
 }
 
 def create_connection():
@@ -66,7 +65,7 @@ def prepare_dataset(data):
     data = data[data['research_type'] == 'SURFACE']
     data = data[data['aluminum_oxychloride'] == 0]
     # data = data[data['research_datetime'] == '2024-04-16 15:00:00']
-    data = data.sample(n=5)
+    # data = data.sample(n=5)
     # data = data[(data['hydrogen'] >= 6.1) & (data['hydrogen'] <= 7.2)]
     return data
 
@@ -75,9 +74,8 @@ def filter_data_for_queue(data, queue_number):
     return data
 
 optimizer = Optimizer(
-    generate_variants=VariantsGenerator(),
-    predict=Queue2Model(limits=constants.POT_WATER_LIMITS, **model_paths),
-    apply_loss_function=LossFunction()
+    generate_features=FeatureEngineering(),
+    predict=ModelForHyperopt(limits=constants.POT_WATER_LIMITS,**model_paths),
 )
 
 
@@ -87,7 +85,7 @@ if __name__ == "__main__":
     data = prepare_dataset(data)
     for queue in queue_list:
         data = filter_data_for_queue(data, queue)
-        for key, value in my_dict.items():
+        for key, value in prices.items():
             data[key] = value
 
         data['queue_water_flow'] = data['performance']
@@ -113,37 +111,27 @@ if __name__ == "__main__":
 
         data[
             ['aluminum_sulfate_pred',
-            'potassium_permanganate_pred',
-            'chlorine_pred',
-            'technical_ammonia_pred',
-            'flocculant_chamber_pred',
-            'flocculant_filters_pred',
-            'cost_reagents_pred']
-        ] = data.apply(lambda x: pd.Series(
-                optimizer(
-                    queue_water_flow=x['performance'],
-                    chromaticity=x['chromaticity'],
-                    turbidity=x['turbidity'],
-                    hydrogen=x['hydrogen'],
-                    alkalinity=x['alkalinity'],
-                    manganese=x['manganese'],
-                    iron=x['iron'],
-                    ammonia_ammonium=x['ammonia_ammonium'],
-                    temperature_c=x['temperature_c'],
-                    iron_2=x['iron_2'],
-                    aluminum_sulfate_price=x['aluminum_sulfate_price'],
-                    potassium_permanganate_price=x['potassium_permanganate_price'],
-                    chlorine_price=x['chlorine_price'],
-                    technical_ammonia_price=x['technical_ammonia_price'],
-                    flocculant_chamber_price=x['flocculant_chamber_price'],
-                    flocculant_filters_price=x['flocculant_filters_price'],
-                )
-        ), axis=1
-        )
+             'chlorine_pred',
+             'flocculant_chamber_pred',
+             'flocculant_filters_pred',
+             'lime_pred',
+             'potassium_permanganate_pred',
+             'technical_ammonia_pred'
+            ]
+        ] = data.apply(lambda x: pd.Series(optimizer.effect_calculation(x)), axis=1)
 
-        data['cost_reagents'] = data['cost_reagents'] + data['lime'] * data[
-            'lime_price'
-        ] * 10 ** (-6) * data['queue_water_flow']
+        data['cost_reagents_pred'] = (
+            data['aluminum_sulfate_pred'] * data['aluminum_sulfate_price'] + data[
+                'potassium_permanganate_pred'
+            ] * data['potassium_permanganate_price'] + (
+                data['chlorine_pred'] * data['chlorine_price']
+            ) + data['technical_ammonia_pred'] * data['technical_ammonia_price'] + (
+                data['flocculant_chamber_pred'] * data['flocculant_chamber_price']
+            ) + data['flocculant_filters_pred'] * data['flocculant_filters_price'] + (
+                data['lime_pred'] * data['lime_price']
+            )
+        ) * 10 ** (-6) * data['performance']
+
         data['effect'] = data['cost_reagents'] - data['cost_reagents_pred']
 
         filename = f"effect_{queue}.xlsx"

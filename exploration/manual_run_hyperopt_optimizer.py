@@ -9,15 +9,15 @@ from dto import ReagentsDosesAndSurfaceWaterParams
 
 my_dict = {
     'queue_water_flow': 25979,
-    'chromaticity': 54,
-    'turbidity': 25.9,
-    'hydrogen': 6.4,
-    'alkalinity': 1.4,
-    'manganese': 0.81,
-    'iron': 9.6,
-    'ammonia_ammonium': 1.09,
-    'temperature_c': 1,
-    'iron_2': 6.3,
+    'chromaticity': 62,
+    'turbidity': 9,
+    'hydrogen': 7.1,
+    'alkalinity': 0.88,
+    'manganese': 0,
+    'iron': 0,
+    'ammonia_ammonium': 0,
+    'temperature_c': 6,
+    'iron_2': 0,
     'aluminum_sulfate_price': 17150,
     'aluminum_oxychloride_price': 28800,
     'potassium_permanganate_price': 295900,
@@ -29,7 +29,7 @@ my_dict = {
 
 model_paths = {
     'path_to_pot_chromaticity_model_queue_1': './models/pot_alkalinity_queue_1.cb',
-    'path_to_pot_chromaticity_model_queue_2': './models/pot_alkalinity_queue_2.pkl',
+    'path_to_pot_chromaticity_model_queue_2': './models/pot_chromaticity_model_queue_2.cb',
     'path_to_pot_hydrogen_model_queue_1': './models/pot_hydrogen_model_queue_1.cb',
     'path_to_pot_hydrogen_model_queue_2': './models/pot_hydrogen_model_queue_2.pkl',
     'path_to_pot_manganese_model_queue_1': './models/pot_manganese_model_queue_1.cb',

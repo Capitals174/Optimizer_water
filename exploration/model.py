@@ -29,7 +29,7 @@ class Model:
         self.pot_chromaticity_model_queue_1 = self._get_model(
             path_to_pot_chromaticity_model_queue_1
         )
-        self.pot_chromaticity_model_queue_2 = self._get_model_pkl(
+        self.pot_chromaticity_model_queue_2 = self._get_model(
             path_to_pot_chromaticity_model_queue_2
         )
         self.pot_hydrogen_model_queue_1 = self._get_model(
@@ -268,6 +268,7 @@ class Model:
         return df
 
     def get_prediction_for_hyperopt(self, df):
+
         features = ['chromaticity', 'turbidity', 'hydrogen',
                     'alkalinity', 'manganese', 'iron', 'ammonia_ammonium',
                     'temperature_c',
@@ -284,9 +285,9 @@ class Model:
            'alkalinity', 'iron', 'temperature_c','aluminum_sulfate', 'chlorine',
            'manganese_permanganate'
         ]
-        features_for_cr = ['chromaticity', 'turbidity', 'hydrogen', 'iron', 'temperature_c',
-            'aluminum_sulfate'
-                           ]
+        features_for_cr = ['chromaticity', 'turbidity', 'hydrogen', 'manganese',
+            'aluminum_sulfate', 'chlorine', 'flocculant_chamber', 'flocculant_filters']
+
         features_for_ph = [
             'chromaticity', 'turbidity', 'hydrogen', 'iron', 'temperature_c',
             'aluminum_sulfate', 'chlorine', 'flocculant_chamber',
@@ -316,11 +317,13 @@ class Model:
         df['pot_hydrogen'] = self.pot_hydrogen_model_queue_2.predict(
             df[features_for_ph]
         )
-
-        df['manganese_permanganate'] = df['manganese'] / df['potassium_permanganate']
-        df['pot_manganese'] = self.pot_manganese_model_queue_2.predict(
-            df[features_for_mn]
-            )
+        if df['manganese'].all() > 0:
+            df['manganese_permanganate'] = df['manganese'] / df['potassium_permanganate']
+            df['pot_manganese'] = self.pot_manganese_model_queue_2.predict(
+                df[features_for_mn]
+                )
+        else:
+            df['pot_manganese'] = 0
 
         df['pot_iron'] = self.pot_iron_model_queue_2.predict(
             df[features_for_fe]
